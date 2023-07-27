@@ -2,20 +2,33 @@
 #include <fstream>
 #include <string>
 #include "parse.h"
+#include <sys/stat.h>
+
+void header() {
+  std::cout << "id" << "\t" << "start" << "\t" << "end" << "\t" << "range" << std::endl;
+}
+
+bool file_exists(const std::string &filepath) {
+  struct stat buffer;
+  return (stat(filepath.c_str(), &buffer) == 0);
+}
 
 int main(int argc, char **argv){
-
-    // print header
-    std::cout << "id" << "\t" << "start" << "\t" << "end" << "\t" << "range" << std::endl;
-
-    if( argc > 1 ){
-      // read from file
+  if(argc == 2){
+    if(file_exists(argv[1])) {
       std::ifstream ifile(argv[1]);
+      header();
+      // read from file
       readSequence(ifile);  
     }
     else {
-      // read from stdin
-      readSequence(std::cin);
+      std::cout << "Provided file does not exists" << std::endl;
     }
-    return 0;
+  }
+  else {
+    header();
+    // read from stdin
+    readSequence(std::cin);
+  }
+  return 0;
 }

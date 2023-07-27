@@ -9,7 +9,6 @@ void readSequence(std::istream& input) {
     
     // loop through nucleotide data
     while(std::getline(input,line).good()){
-      
       if(line[0] == '>'){
           // was the last character of the previous sequence an 'N'?
           if (found_start == true) {
