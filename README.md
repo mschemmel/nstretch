@@ -1,5 +1,6 @@
 # nstretch
 You're curious about the missing part of your genome? You need to know where the Ns are!
+So far, only fasta files are supported.
 
 ## Usage
 ```bash
