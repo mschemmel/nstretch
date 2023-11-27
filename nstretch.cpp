@@ -4,28 +4,41 @@
 #include "parse.h"
 #include <sys/stat.h>
 
-void header() {
-  std::cout << "id" << "\t" << "start" << "\t" << "end" << "\t" << "range" << std::endl;
+void header()
+{
+  std::cout << "id"
+            << "\t"
+            << "start"
+            << "\t"
+            << "end"
+            << "\t"
+            << "range" << std::endl;
 }
 
-bool file_exists(const std::string &filepath) {
+bool file_exists(const std::string &filepath)
+{
   struct stat buffer;
   return (stat(filepath.c_str(), &buffer) == 0);
 }
 
-int main(int argc, char **argv){
-  if(argc == 2){
-    if(file_exists(argv[1])) {
+int main(int argc, char **argv)
+{
+  if (argc == 2)
+  {
+    if (file_exists(argv[1]))
+    {
       std::ifstream ifile(argv[1]);
       header();
       // read from file
-      readSequence(ifile);  
+      readSequence(ifile);
     }
-    else {
+    else
+    {
       std::cout << "Provided file does not exists" << std::endl;
     }
   }
-  else {
+  else
+  {
     header();
     // read from stdin
     readSequence(std::cin);
