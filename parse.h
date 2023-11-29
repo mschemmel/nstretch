@@ -1,3 +1,7 @@
+bool contains_N(const std::string& str) {
+  return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
+}
+
 void readSequence(std::istream &input) {
   std::string line, name;
   unsigned int position = 1;
@@ -9,7 +13,7 @@ void readSequence(std::istream &input) {
 
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
-    if (line[0] == '>') {
+    if (line.find(">") == 0) {
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
         std::cout << name << "\t" << start_position << "\t" << start_position << "\t" << '1' << std::endl;
@@ -19,11 +23,15 @@ void readSequence(std::istream &input) {
       name = line.substr(1);
       position = 1;
     }
-    else if (line[0] == ';') {
+    else if (line.find(";") == 0) {
       continue;
     }
     else {
       if (!line.empty()) {
+        if (!(contains_N(line))) {
+          position += line.length();
+          continue;
+        }
         for (int i = 0; i < line.length(); i++) {
           const char currentChar = line[i];
           // the current char is 'N'?
