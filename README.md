@@ -10,11 +10,12 @@ cat genome.fa | ./nstretch              # stdin
 gunzip -c genome.fa.gz | ./nstretch     # stdin using gzipped data
 ```
 
-## Ouput
-|id|start|end|range|
-|---|---|---|---|
-|Chr1|12|34|22|
-|Chr2|13478|13582|104|
+## Output
+The output is given in bed format consisting of `chr`, `start` and `end`.
+|chr|start|end|
+|---|---|---|
+|Chr1|12|34|
+|Chr2|13478|13582|
 |...|...|...|...|
 
 
