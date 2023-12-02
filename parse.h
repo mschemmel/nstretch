@@ -16,12 +16,12 @@ void readSequence(std::istream &input) {
     if (line.find(">") == 0) {
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
-        std::cout << name << "\t" << start_position << "\t" << start_position << "\t" << '1' << std::endl;
+        std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
         found_start = false;
         found_end = false;
       }
       name = line.substr(1);
-      position = 1;
+      position = 0;
     }
     else if (line.find(";") == 0) {
       continue;
@@ -55,8 +55,8 @@ void readSequence(std::istream &input) {
           // we do have both, start and end position
           // we found the whole stretch -> print and clean up for next hit
           if (found_start == true && found_end == true) {
-            const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
-            std::cout << name << "\t" << start_position << "\t" << end_position << "\t" << range << std::endl;
+            //const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
+            std::cout << name << "\t" << start_position << "\t" << end_position << std::endl;
             found_start = false;
             found_end = false;
           }
@@ -67,6 +67,6 @@ void readSequence(std::istream &input) {
   }
   // if N is last character of file
   if (found_start == true) {
-    std::cout << name << "\t" << start_position << "\t" << start_position << "\t" << '1' << std::endl;
+    std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
   }
 }

@@ -4,17 +4,6 @@
 #include "parse.h"
 #include <sys/stat.h>
 
-void header()
-{
-  std::cout << "id"
-            << "\t"
-            << "start"
-            << "\t"
-            << "end"
-            << "\t"
-            << "range" << std::endl;
-}
-
 bool file_exists(const std::string &filepath)
 {
   struct stat buffer;
@@ -28,7 +17,6 @@ int main(int argc, char **argv)
     if (file_exists(argv[1]))
     {
       std::ifstream ifile(argv[1]);
-      header();
       // read from file
       readSequence(ifile);
     }
@@ -39,7 +27,6 @@ int main(int argc, char **argv)
   }
   else
   {
-    header();
     // read from stdin
     readSequence(std::cin);
   }
