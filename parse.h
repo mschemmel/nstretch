@@ -19,7 +19,7 @@ class hitCollector {
       std::cout << chr << "\t" << start << "\t" << end << std::endl;
     }
 };
-void (hitCollector::*print)(void) = &hitCollector::print; // call member function of pointer
+void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
 void readSequence(std::istream &input) {
   std::vector<hitCollector*> vec;
@@ -55,9 +55,10 @@ void readSequence(std::istream &input) {
           continue;
         }
         for (int i = 0; i < line.length(); i++) {
-          const char currentChar = line[i];
+          const char *currentChar = &line[i];
           // the current char is 'N'?
-          if (currentChar == 'N' || currentChar == 'n') {
+          //78 = 'N' and 100 = 'n'
+          if (*currentChar == 78 || *currentChar == 110) {
             // do we have a start position already?
             // if no, this is the start
             if (found_start == false) {
