@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include "parse.h"
 #include <sys/stat.h>
 

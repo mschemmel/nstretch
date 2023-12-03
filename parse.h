@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 
 bool contains_N(const std::string& str) {
   return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
@@ -15,9 +16,10 @@ class hitCollector {
       end = end_;
     }
     void print(void) {
-      std::cout << chr << std::endl;
+      std::cout << chr << "\t" << start << "\t" << end << std::endl;
     }
 };
+void (hitCollector::*print)(void) = &hitCollector::print; // call member function of pointer
 
 void readSequence(std::istream &input) {
   std::vector<hitCollector*> vec;
@@ -33,9 +35,7 @@ void readSequence(std::istream &input) {
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
     if (line.find(">") == 0) {
-      for (auto i: vec) {
-        std::cout << i->chr << "\t" << i->start << "\t" << i->end << std::endl;
-      }
+      for (auto i: vec) (i->*print)();
       vec.clear();
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
@@ -47,9 +47,7 @@ void readSequence(std::istream &input) {
       name = line.substr(1);
       position = 0;
     }
-    else if (line.find(";") == 0) {
-      continue;
-    }
+    else if (line.find(";") == 0) continue;
     else {
       if (!line.empty()) {
         if (!(contains_N(line))) {
@@ -81,7 +79,7 @@ void readSequence(std::istream &input) {
           if (found_start == true && found_end == true) {
             //const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
             //std::cout << name << "\t" << start_position << "\t" << end_position << std::endl;
-            vec.push_back(new hitCollector(name, start_position, start_position));
+            vec.push_back(new hitCollector(name, start_position, end_position));
             found_start = false;
             found_end = false;
           }
@@ -93,5 +91,6 @@ void readSequence(std::istream &input) {
   // if N is last character of file
   if (found_start == true) {
     vec.push_back(new hitCollector(name, start_position, start_position));
+    for (auto i: vec) (i->*print)();
   }
 }
