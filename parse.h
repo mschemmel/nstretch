@@ -1,8 +1,27 @@
+#include <vector>
+
 bool contains_N(const std::string& str) {
   return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
 }
 
+class hitCollector {
+  public:
+    std::string chr;
+    unsigned int start;
+    unsigned int end;
+    hitCollector(std::string chr_, unsigned int start_, unsigned int end_) {
+      chr = chr_;
+      start = start_;
+      end = end_;
+    }
+    void print(void) {
+      std::cout << chr << std::endl;
+    }
+};
+
 void readSequence(std::istream &input) {
+  std::vector<hitCollector*> vec;
+
   std::string line, name;
   unsigned int position = 1;
   unsigned int range = 0;
@@ -14,9 +33,14 @@ void readSequence(std::istream &input) {
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
     if (line.find(">") == 0) {
+      for (auto i: vec) {
+        std::cout << i->chr << "\t" << i->start << "\t" << i->end << std::endl;
+      }
+      vec.clear();
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
-        std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
+        //std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
+        vec.push_back(new hitCollector(name, start_position, start_position));
         found_start = false;
         found_end = false;
       }
@@ -56,7 +80,8 @@ void readSequence(std::istream &input) {
           // we found the whole stretch -> print and clean up for next hit
           if (found_start == true && found_end == true) {
             //const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
-            std::cout << name << "\t" << start_position << "\t" << end_position << std::endl;
+            //std::cout << name << "\t" << start_position << "\t" << end_position << std::endl;
+            vec.push_back(new hitCollector(name, start_position, start_position));
             found_start = false;
             found_end = false;
           }
@@ -67,6 +92,6 @@ void readSequence(std::istream &input) {
   }
   // if N is last character of file
   if (found_start == true) {
-    std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
+    vec.push_back(new hitCollector(name, start_position, start_position));
   }
 }
