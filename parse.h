@@ -21,12 +21,16 @@ class hitCollector {
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
+void showHits(std::vector<hitCollector*> &hc) {
+  if(!hc.empty()) for (auto i: hc) (i->*print)();
+  hc.clear();
+}
+
 void readSequence(std::istream &input) {
   std::vector<hitCollector*> vec;
 
   std::string line, name;
-  unsigned int position = 1;
-  unsigned int range = 0;
+  unsigned int position;
   unsigned int start_position = 0;
   unsigned int end_position = 0;
   bool found_start = false;
@@ -35,11 +39,9 @@ void readSequence(std::istream &input) {
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
     if (line.find(">") == 0) {
-      if(!vec.empty()) for (auto i: vec) (i->*print)();
-      vec.clear();
+      showHits(vec);
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
-        //std::cout << name << "\t" << start_position << "\t" << start_position << std::endl;
         vec.push_back(new hitCollector(name, start_position, start_position));
         found_start = false;
         found_end = false;
@@ -79,7 +81,6 @@ void readSequence(std::istream &input) {
           // we found the whole stretch -> print and clean up for next hit
           if (found_start == true && found_end == true) {
             //const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
-            //std::cout << name << "\t" << start_position << "\t" << end_position << std::endl;
             vec.push_back(new hitCollector(name, start_position, end_position));
             found_start = false;
             found_end = false;
@@ -92,6 +93,6 @@ void readSequence(std::istream &input) {
   // if N is last character of file
   if (found_start == true) {
     vec.push_back(new hitCollector(name, start_position, start_position));
-    for (auto i: vec) (i->*print)();
+    showHits(vec);
   }
 }
