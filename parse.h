@@ -39,13 +39,15 @@ void readSequence(std::istream &input) {
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
     if (line.find(">") == 0) {
-      showHits(vec);
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
         vec.push_back(new hitCollector(name, start_position, start_position));
         found_start = false;
         found_end = false;
       }
+	  // show hits of previous sequence
+      showHits(vec);
+
       name = line.substr(1);
       position = 0;
     }
