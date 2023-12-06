@@ -16,7 +16,7 @@ class hitCollector {
       end = end_;
     }
     void print(void) {
-      std::cout << chr << "\t" << start << "\t" << end << std::endl;
+      std::cout << chr << "\t" << start << "\t" << end << "\n";
     }
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
