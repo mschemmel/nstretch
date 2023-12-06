@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <cstdlib>
 
 bool contains_N(const std::string& str) {
   return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
@@ -26,7 +27,13 @@ void showHits(std::vector<hitCollector*> &hc) {
   hc.clear();
 }
 
+std::string getenv_default(const std::string &env, const std::string &default_value) {
+  const char *value = getenv(env.c_str());
+  return(value ? value : default_value);
+}
+
 void readSequence(std::istream &input) {
+  const std::string BUFFER = getenv_default("BUFFER", "0");
   std::vector<hitCollector*> vec;
 
   std::string line, name;
@@ -46,7 +53,7 @@ void readSequence(std::istream &input) {
         found_end = false;
       }
       // show hits of previous sequence
-      showHits(vec);
+      if(BUFFER == "0") showHits(vec);
 
       name = line.substr(1);
       position = 0;
@@ -82,7 +89,6 @@ void readSequence(std::istream &input) {
           // we do have both, start and end position
           // we found the whole stretch -> print and clean up for next hit
           if (found_start == true && found_end == true) {
-            //const unsigned int range = end_position == start_position ? 1 : (end_position + 1) - start_position;
             vec.push_back(new hitCollector(name, start_position, end_position));
             found_start = false;
             found_end = false;
