@@ -45,7 +45,7 @@ void readSequence(std::istream &input) {
         found_start = false;
         found_end = false;
       }
-	  // show hits of previous sequence
+      // show hits of previous sequence
       showHits(vec);
 
       name = line.substr(1);
@@ -95,6 +95,6 @@ void readSequence(std::istream &input) {
   // if N is last character of file
   if (found_start == true) {
     vec.push_back(new hitCollector(name, start_position, start_position));
-    showHits(vec);
   }
+  showHits(vec);
 }
