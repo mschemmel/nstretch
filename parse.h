@@ -1,6 +1,16 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
+#include <iostream>
+#include <iomanip>
+
+std::string getenv_default(const std::string &env, const std::string &default_value) {
+  const char *value = getenv(env.c_str());
+  return(value ? value : default_value);
+}
+
+std::string SUMMARY = getenv_default("SUMMARY", "0");
+std::string GENOMEWIDE = getenv_default("GENOMEWIDE", "0");
 
 bool contains_N(const std::string& str) {
   return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
@@ -9,9 +19,9 @@ bool contains_N(const std::string& str) {
 class hitCollector {
   public:
     std::string chr;
-    unsigned int start;
-    unsigned int end;
-    hitCollector(std::string chr_, unsigned int start_, unsigned int end_) {
+    int start;
+    int end;
+    hitCollector(const std::string chr_, int start_, int end_) {
       chr = chr_;
       start = start_;
       end = end_;
@@ -19,21 +29,28 @@ class hitCollector {
     void print(void) {
       std::cout << chr << "\t" << start << "\t" << end << "\n";
     }
+    int range(){
+       return(end-start+1);
+    }
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
-void showHits(std::vector<hitCollector*> &hc) {
-  if(!hc.empty()) for (auto i: hc) (i->*print)();
+void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len) {
+  if(!hc.empty()) {
+    if(SUMMARY == "1") {
+      int range = 0;
+      for (auto i: hc) range += i->range();
+      float ratio = (float(range) / chr_len) * 100;
+      std::cout << std::setprecision(3) <<  hc[0]->chr.substr(0,40) << "\t" << chr_len << "\t" << range << "\t" << ratio << "\n";
+    } //TODO: calculate genomewide ratio
+    else {
+      for (auto i: hc) (i->*print)();
+    }
+  }
   hc.clear();
 }
 
-std::string getenv_default(const std::string &env, const std::string &default_value) {
-  const char *value = getenv(env.c_str());
-  return(value ? value : default_value);
-}
-
 void readSequence(std::istream &input) {
-  const std::string BUFFER = getenv_default("BUFFER", "0");
   std::vector<hitCollector*> vec;
 
   std::string line, name;
@@ -48,13 +65,15 @@ void readSequence(std::istream &input) {
     if (line.find(">") == 0) {
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
-        vec.push_back(new hitCollector(name, start_position, start_position));
+        vec.push_back(new hitCollector(name,start_position,start_position));
         found_start = false;
         found_end = false;
       }
-      // show hits of previous sequence
-      if(BUFFER == "0") showHits(vec);
 
+      // ouput requested format
+      report(vec, name, position);
+
+      // preparation for next sequence
       name = line.substr(1);
       position = 0;
     }
@@ -89,7 +108,7 @@ void readSequence(std::istream &input) {
           // we do have both, start and end position
           // we found the whole stretch -> print and clean up for next hit
           if (found_start == true && found_end == true) {
-            vec.push_back(new hitCollector(name, start_position, end_position));
+            vec.push_back(new hitCollector(name,start_position,end_position));
             found_start = false;
             found_end = false;
           }
@@ -100,7 +119,7 @@ void readSequence(std::istream &input) {
   }
   // if N is last character of file
   if (found_start == true) {
-    vec.push_back(new hitCollector(name, start_position, start_position));
+    vec.push_back(new hitCollector(name,start_position,start_position));
   }
-  showHits(vec);
+  report(vec,name,position);
 }
