@@ -4,6 +4,9 @@
 #include <iostream>
 #include <iomanip>
 
+unsigned int chromosome_length = 0;
+unsigned int total_ns = 0;
+
 std::string getenv_default(const std::string &env, const std::string &default_value) {
   const char *value = getenv(env.c_str());
   return(value ? value : default_value);
@@ -35,7 +38,7 @@ class hitCollector {
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
-void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len) {
+void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len, bool gw = false) {
   if(!hc.empty()) {
     if(SUMMARY == "1") {
       int range = 0;
@@ -43,6 +46,14 @@ void report(std::vector<hitCollector*> &hc, const std::string name, const unsign
       float ratio = (float(range) / chr_len) * 100;
       std::cout << std::setprecision(3) <<  hc[0]->chr.substr(0,40) << "\t" << chr_len << "\t" << range << "\t" << ratio << "\n";
     } //TODO: calculate genomewide ratio
+    else if(GENOMEWIDE == "1") {
+      chromosome_length += chr_len;
+      for (auto i:hc) total_ns += i->range();
+      if (gw) {
+        float total = (float(total_ns) / chromosome_length) * 100;
+        std::cout << "Genome size: " << chromosome_length << " bp" << "\t" << "N(%): " << total << "\n";
+      }
+    }
     else {
       for (auto i: hc) (i->*print)();
     }
@@ -121,5 +132,5 @@ void readSequence(std::istream &input) {
   if (found_start == true) {
     vec.push_back(new hitCollector(name,start_position,start_position));
   }
-  report(vec,name,position);
+  report(vec,name,position,true);
 }
