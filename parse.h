@@ -7,6 +7,8 @@
 unsigned int chromosome_length = 0;
 unsigned int total_ns = 0;
 
+enum class Show { Genomewide,Hide };
+
 std::string getenv_default(const std::string &env, const std::string &default_value) {
   const char *value = getenv(env.c_str());
   return(value ? value : default_value);
@@ -38,7 +40,7 @@ class hitCollector {
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
-void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len, bool gw = false) {
+void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len, Show gw) {
   if(!hc.empty()) {
     if(SUMMARY == "1") {
       int range = 0;
@@ -49,7 +51,7 @@ void report(std::vector<hitCollector*> &hc, const std::string name, const unsign
     else if(GENOMEWIDE == "1") {
       chromosome_length += chr_len;
       for (auto i:hc) total_ns += i->range();
-      if (gw) {
+      if (gw == Show::Genomewide) {
         float total = (float(total_ns) / chromosome_length) * 100;
         std::cout << "Genome size: " << chromosome_length << " bp" << "\t" << "N(%): " << total << "\n";
       }
@@ -82,7 +84,7 @@ void readSequence(std::istream &input) {
       }
 
       // ouput requested format
-      report(vec, name, position);
+      report(vec, name, position, Show::Hide);
 
       // preparation for next sequence
       name = line.substr(1);
@@ -132,5 +134,5 @@ void readSequence(std::istream &input) {
   if (found_start == true) {
     vec.push_back(new hitCollector(name,start_position,start_position));
   }
-  report(vec,name,position,true);
+  report(vec,name,position,Show::Genomewide);
 }
