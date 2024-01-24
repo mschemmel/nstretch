@@ -47,7 +47,7 @@ void report(std::vector<hitCollector*> &hc, const std::string name, const unsign
       for (auto i: hc) range += i->range();
       float ratio = (float(range) / chr_len) * 100;
       std::cout << std::setprecision(3) <<  hc[0]->chr.substr(0,40) << "\t" << chr_len << "\t" << range << "\t" << ratio << "\n";
-    } //TODO: calculate genomewide ratio
+    }
     else if(GENOMEWIDE == "1") {
       chromosome_length += chr_len;
       for (auto i:hc) total_ns += i->range();
