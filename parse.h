@@ -100,7 +100,7 @@ void readSequence(std::istream &input) {
         for (int i = 0; i < line.length(); i++) {
           const char *currentChar = &line[i];
           // the current char is 'N'?
-          //78 = 'N' and 100 = 'n'
+          // 78 = 'N' and 110 = 'n'
           if (*currentChar == 78 || *currentChar == 110) {
             // do we have a start position already?
             // if no, this is the start
