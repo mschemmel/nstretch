@@ -53,7 +53,7 @@ void report(std::vector<hitCollector*> &hc, const std::string name, const unsign
       for (auto i:hc) total_ns += i->range();
       if (gw == Show::Genomewide) {
         float total = (float(total_ns) / chromosome_length) * 100;
-        std::cout << "Genome size: " << chromosome_length << " bp" << "\t" << "N(%): " << total << "\n";
+        std::cout << "Genome size (bp): " << chromosome_length << "\t" << "N: " << total << " %" << "\n";
       }
     }
     else {
@@ -75,7 +75,9 @@ void readSequence(std::istream &input) {
 
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
-    if (line.find(">") == 0) {
+	const char *input = line.c_str();
+
+    if (input[0] == '>') {
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
         vec.push_back(new hitCollector(name,start_position,start_position));
@@ -90,7 +92,7 @@ void readSequence(std::istream &input) {
       name = line.substr(1);
       position = 0;
     }
-    else if (line.find(";") == 0) continue;
+    else if (input[0] == ';') continue;
     else {
       if (!line.empty()) {
         if (!(contains_N(line))) {
