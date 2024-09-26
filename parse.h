@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <string_view>
 
 unsigned int chromosome_length = 0;
 unsigned int total_ns = 0;
@@ -17,16 +18,16 @@ std::string getenv_default(const std::string &env, const std::string &default_va
 std::string SUMMARY = getenv_default("SUMMARY", "0");
 std::string GENOMEWIDE = getenv_default("GENOMEWIDE", "0");
 
-bool contains_N(const std::string& str) {
-  return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
+bool contains_N(const std::string_view &str) {
+	return(str.find("N") != std::string::npos || str.find("n") != std::string::npos);
 }
 
 class hitCollector {
   public:
-    std::string chr;
+    std::string_view chr;
     int start;
     int end;
-    hitCollector(const std::string chr_, int start_, int end_) {
+    hitCollector(const std::string_view chr_, int start_, int end_) {
       chr = chr_;
       start = start_;
       end = end_;
@@ -40,7 +41,7 @@ class hitCollector {
 };
 void (hitCollector::*print)(void) = &hitCollector::print; // call member function of class instance
 
-void report(std::vector<hitCollector*> &hc, const std::string name, const unsigned int chr_len, Show gw) {
+void report(std::vector<hitCollector*> &hc, const std::string_view name, const unsigned int chr_len, Show gw) {
   if(!hc.empty()) {
     if(SUMMARY == "1") {
       int range = 0;
@@ -75,9 +76,9 @@ void readSequence(std::istream &input) {
 
   // loop through nucleotide data
   while (std::getline(input, line).good()) {
-	const char *input = line.c_str();
+	const char *input_line = line.c_str();
 
-    if (input[0] == '>') {
+    if (input_line[0] == '>') {
       // was the last character of the previous sequence an 'N'?
       if (found_start == true) {
         vec.push_back(new hitCollector(name,start_position,start_position));
@@ -92,7 +93,7 @@ void readSequence(std::istream &input) {
       name = line.substr(1);
       position = 0;
     }
-    else if (input[0] == ';') continue;
+    else if (input_line[0] == ';') continue;
     else {
       if (!line.empty()) {
         if (!(contains_N(line))) {
